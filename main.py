@@ -9,6 +9,7 @@ white = (255, 255, 255)
 blue = (0,0,255)
 red = (255, 0, 0)
 
+font = pygame.font.Font(None, 70)
 
 screenWidth =  1280
 screenHeight = 720
@@ -45,12 +46,12 @@ class AirHockeyStick:
             if self.x < (screenWidth - stickWidth):
                 self.x += self.speed
         else:
-            if self.x < (stickWidth*4):
+            if self.x < (stickWidth*10):
                 self.x += self.speed
 
     def move_left(self):
         if self.player == 2:
-            if self.x > (screenWidth - (stickWidth*4)):
+            if self.x > (screenWidth - (stickWidth*10)):
                 self.x -= self.speed
         else:
             if self.x > 0:
@@ -74,9 +75,13 @@ class AirHockeyPuck:
         self.colour = colour
 
     def startPuck(self):
-        if self.checkWallCollisions() == 0 or self.checkWallCollisions() == screenWidth:
+        if self.x == 0 or self.x == screenWidth:
+            #place the puck in the middle
             self.x = screenWidth // 2
             self.y = screenHeight // 2
+            # Generate random speeds for the puck
+            self.speed_x = randint(3, 7) * (-1 if randint(0, 1) == 0 else 1)
+            self.speed_y = randint(3, 7) * (-1 if randint(0, 1) == 0 else 1)
         else:
             pass
 
@@ -86,26 +91,30 @@ class AirHockeyPuck:
 
     def checkWallCollisions(self):
         if self.x - self.size < 0 or self.x + self.size > screenWidth:
-            return self.x - self.size
+            return self.x
 
         if self.y - self.size < 0 or self.y + self.size > screenHeight:
             self.speed_y = -self.speed_y
 
 
 def puckScoreRight(puck: AirHockeyPuck) -> bool:
-    if puck.checkWallCollisions() == 0:
+    if puck.checkWallCollisions() == screenWidth:
+        puck.startPuck()
         return True
     else:
         pass
 
 def puckScoreLeft(puck: AirHockeyPuck) -> bool:
-    if puck.checkWallCollisions() == screenWidth:
+    if puck.checkWallCollisions() == 0:
+        puck.startPuck()
         return True
     else:
-        pass
+        return False
 
-def scoreboard():
-    pass
+def scoreboard(counter1, counter2):
+    score_text = font.render(f" {counter1}   {counter2}", True, red)
+    text_rect = score_text.get_rect(center=(screenWidth // 2, 50))
+    screen.blit(score_text, text_rect.topleft)
 
 
 def checkCollisions(stick1: AirHockeyStick, stick2:AirHockeyStick, puck: AirHockeyPuck) -> None:
@@ -188,12 +197,13 @@ while running:
     if puckScoreLeft(puck):
         counter2 += 1
 
-    if counter1 == 5 or counter2 == 5:
+    if counter1 == 1 or counter2 == 1:
         print("Game ends")
         running = False
 
 
     drawBoard()
+    scoreboard(counter1, counter2)
     pygame.draw.rect(screen, black, (stick1.x, stick1.y, stick1.width, stick1.height))
     pygame.draw.rect(screen, black, (stick2.x, stick2.y, stick2.width, stick2.height))
     pygame.draw.circle(screen, puck.colour, (int(puck.x), int(puck.y)), puck.size)

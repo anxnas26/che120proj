@@ -3,6 +3,8 @@ All work was split equally amongst group members
 
 Air Hockey game with options to play with your friend (locally) or with AI
 
+Github Project: https://github.com/anxnas26/che120proj
+
 *Some debugging was done with the aid of ChatGPT. It is commented where it was used.
 
 """
